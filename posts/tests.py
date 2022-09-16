@@ -9,7 +9,7 @@ from . import views
 class TestPosts(TestCase):
     def test_check_url_posts(self):
         url = reverse('posts:home')
-        self.assertEqual(url, '/posts/home/')
+        self.assertEqual(url, '/posts/')
 
     def test_check_view_posts(self):
         view = resolve(reverse('posts:home')).func
