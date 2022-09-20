@@ -1,8 +1,16 @@
 import random
 
+from django.core.files import File
+from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
 
-from .models import Posts
+from utils.secret_manager import get_s3_config, get_secrets
+
+from .models import Posts, User
+from .utils.request_img import get_img
 
 
 def home(request):
@@ -49,3 +57,40 @@ def home(request):
             'delay_img': delay_img,
         }
     )
+
+
+bucket = get_s3_config()['s3']['bucket']
+key = get_s3_config()['s3']['key']
+
+
+account_sid = get_secrets(bucket=bucket, key=key)
+auth_token = get_secrets(bucket=bucket, key=key)
+client = Client(account_sid, auth_token)
+
+
+@ csrf_exempt
+def bot(request):
+    msg_text = request.POST.get('Body')
+    number = request.POST.get('From')
+    name = request.POST.get('ProfileName')
+    media = request.POST.get('MediaUrl0')
+
+    resp = MessagingResponse()
+
+    print(request.POST)
+
+    if msg_text == 'oi':
+        resp.message(f"Olá {name}, O Bot está funcionando")
+
+    if media:
+        just_number = number.replace('whatsapp:+', '')
+        filename = f'{just_number}.jpg'
+        media_url = get_img(media, filename)
+
+        post = Posts.objects.create(
+            nome=User.objects.create_user(username='gustavo3'),
+            number=number.replace('whatsapp:+', ''),
+            cover=File(open(media_url, 'rb')),
+        )
+
+    return HttpResponse('ola')
