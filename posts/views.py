@@ -87,7 +87,7 @@ def bot(request):
         filename = f'{just_number}.jpg'
         media_url = get_img(media, filename)
 
-        post = Posts.objects.create(
+        post = Posts.objects.create(  # noqa: F841
             nome=User.objects.create_user(username='gustavo3'),
             number=number.replace('whatsapp:+', ''),
             cover=File(open(media_url, 'rb')),
