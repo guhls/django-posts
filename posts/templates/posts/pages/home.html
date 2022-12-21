@@ -1,9 +1,12 @@
 {% load static %}
 
+<!-- Template Taken From W3SCHOOL -->
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
 * {box-sizing: border-box;}
 body {font-family: Verdana, sans-serif;}
@@ -72,9 +75,9 @@ img {vertical-align: middle;}
 <body>
 
 <h2>Automatic Slideshow</h2>
-<p>Change image every 2 seconds:</p>
+<p>Change image every 5 - 10 seconds:</p>
 {% if new_photos %}
-  <p>Fotos Novas!!</p>
+  <p><i class="fa-solid fa-star"></i>Novas Fotos!!</p>
 {% else %}
   <p>Vamos rever algumas fotos!</p>
 {% endif %}
@@ -118,7 +121,7 @@ function showSlides() {
   }
   slides[slideIndex-1].style.display = "block";  
   dots[slideIndex-1].className += " active";
-  setTimeout(showSlides, {{ delay_img }}); // Change image every 2 seconds
+  setTimeout(showSlides, {{ delay_img }}); // Change image every 5 or 10 seconds
 }
 
 setTimeout(function(){
