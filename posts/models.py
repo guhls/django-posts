@@ -6,7 +6,7 @@ class Posts(models.Model):
     nome = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True)
     number = models.IntegerField(
-        unique=True, null=True, blank=False, default=None)
+        unique=False, null=True, blank=False, default=None)
     cover = models.ImageField(
         upload_to='posts/%Y/%m-%d/', blank=True, default='')
     description = models.CharField(

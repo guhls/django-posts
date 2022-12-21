@@ -1,16 +1,17 @@
+import os
 import random
 
-from django.core.files import File
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from dotenv import load_dotenv
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 
-from utils.secret_manager import get_s3_config, get_secrets
-
 from .models import Posts, User
 from .utils.request_img import get_img
+
+load_dotenv()
 
 
 def home(request):
@@ -59,13 +60,10 @@ def home(request):
     )
 
 
-bucket = get_s3_config()['s3']['bucket']
-key = get_s3_config()['s3']['key']
-
-
-account_sid = get_secrets(bucket=bucket, key=key)
-auth_token = get_secrets(bucket=bucket, key=key)
-client = Client(account_sid, auth_token)
+client = Client(
+    os.environ.get('account_sid'),
+    os.environ.get('auth_token')
+)
 
 
 @ csrf_exempt
@@ -76,21 +74,30 @@ def bot(request):
     media = request.POST.get('MediaUrl0')
 
     resp = MessagingResponse()
+    msg = resp.message()
 
     print(request.POST)
 
     if msg_text == 'oi':
-        resp.message(f"Olá {name}, O Bot está funcionando")
+        msg.body(f"Olá {name}, O Bot está funcionando")
+        return HttpResponse(resp)
 
     if media:
         just_number = number.replace('whatsapp:+', '')
         filename = f'{just_number}.jpg'
-        media_url = get_img(media, filename)
+        image_file = get_img(media, filename)
 
-        post = Posts.objects.create(  # noqa: F841
-            nome=User.objects.create_user(username='gustavo3'),
-            number=number.replace('whatsapp:+', ''),
-            cover=File(open(media_url, 'rb')),
-        )
+        if image_file:
+            gustavo = User.objects.get(username="gustavo")
 
-    return HttpResponse('ola')
+            post = Posts.objects.create(  # noqa: F841
+                nome=gustavo,
+                number=number.replace('whatsapp:+', ''),
+                cover=image_file,
+            )
+
+            msg.body(f'Thank you, Image posted! with id {post.pk}')
+        else:
+            msg.body('Something gones wrong')
+
+    return HttpResponse(resp)
