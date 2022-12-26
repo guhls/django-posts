@@ -2,7 +2,8 @@ import os
 import random
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 from twilio.rest import Client
@@ -12,6 +13,10 @@ from .models import Posts, User
 from .utils.request_img import get_img
 
 load_dotenv()
+
+
+def default_page(request):
+    return redirect(reverse('posts:home'))
 
 
 def home(request):

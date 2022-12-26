@@ -18,7 +18,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from posts.views import default_page
+
 urlpatterns = [
+    path('', default_page),
     path('admin/', admin.site.urls),
     path('posts/', include('posts.urls'))
 ]
